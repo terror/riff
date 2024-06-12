@@ -1,6 +1,12 @@
 import { motion } from 'framer-motion';
+import 'highlight.js/styles/base16/seti-ui.css';
+import 'katex/dist/katex.min.css';
 import { Trash2 } from 'lucide-react';
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
+import ReactMarkdown from 'react-markdown';
+import rehypeHighlight from 'rehype-highlight';
+import rehypeKatex from 'rehype-katex';
+import remarkMath from 'remark-math';
 
 import {
   AlertDialog,
@@ -16,6 +22,7 @@ import {
 import { Button } from './components/ui/button';
 import { Textarea } from './components/ui/textarea';
 import { formatDateToLongString, formatTimeTo12HourString } from './lib/utils';
+import './styles/syntax.css';
 
 type Note = {
   content: string;
@@ -49,7 +56,7 @@ const Alert = ({ trigger, title, content, action }: AlertProps) => {
   );
 };
 
-const Note = ({
+const NoteComponent = ({
   note,
   onDelete,
   onUpdate,
@@ -59,8 +66,11 @@ const Note = ({
   onUpdate: (content: string) => void;
 }) => {
   const { content, createdAt } = note;
+
   const [isEditing, setIsEditing] = useState(false);
   const [editContent, setEditContent] = useState(content);
+
+  const textareaRef = useRef<HTMLTextAreaElement | null>(null);
 
   const startEditing = () => {
     setEditContent(content);
@@ -68,9 +78,20 @@ const Note = ({
   };
 
   const handleSave = () => {
-    onUpdate(editContent);
+    if (editContent.trim()) onUpdate(editContent);
     setIsEditing(false);
   };
+
+  const handleTextareaResize = () => {
+    if (textareaRef.current) {
+      textareaRef.current.style.height = 'auto';
+      textareaRef.current.style.height = `${textareaRef.current.scrollHeight}px`;
+    }
+  };
+
+  useEffect(() => {
+    if (isEditing && textareaRef.current) handleTextareaResize();
+  }, [isEditing, editContent]);
 
   return (
     <div className='group relative mb-3 flex items-start space-x-3 rounded-lg p-3'>
@@ -78,16 +99,24 @@ const Note = ({
       <div className='flex-grow pr-10'>
         {isEditing ? (
           <Textarea
+            ref={textareaRef}
+            autoComplete='off'
+            autoCorrect='off'
             value={editContent}
-            className='w-full'
+            className='w-full resize-none overflow-hidden'
             onChange={(e) => setEditContent(e.target.value)}
             onBlur={handleSave}
             autoFocus
           />
         ) : (
-          <p className='break-words text-justify' onClick={startEditing}>
-            {content}
-          </p>
+          <div className='prose' onClick={startEditing}>
+            <ReactMarkdown
+              remarkPlugins={[remarkMath]}
+              rehypePlugins={[rehypeHighlight, rehypeKatex]}
+            >
+              {content}
+            </ReactMarkdown>
+          </div>
         )}
       </div>
       <Alert
@@ -156,7 +185,7 @@ const App = () => {
       <div>
         {notes.length > 0 ? (
           notes.map((note, index) => (
-            <Note
+            <NoteComponent
               key={index}
               note={note}
               onDelete={() => handleDelete(index)}
