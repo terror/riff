@@ -15,13 +15,14 @@ const formatDate = (date: Date): string => {
 const formatTime = (date: Date): string => {
   let hours = date.getHours();
   let minutes = date.getMinutes();
+  let minutesString = minutes.toString();
   let ampm = hours >= 12 ? 'PM' : 'AM';
 
   hours = hours % 12;
   hours = hours ? hours : 12;
-  minutes = minutes < 10 ? 0 + minutes : minutes;
+  minutesString = minutes < 10 ? '0' + minutesString : minutesString;
 
-  return `${hours}:${minutes} ${ampm}`;
+  return `${hours}:${minutesString} ${ampm}`;
 };
 
 const Note = ({ note }: { note: Note }) => {
