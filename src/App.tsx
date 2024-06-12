@@ -1,6 +1,21 @@
 import { useState } from 'react';
+
 import { Textarea } from './components/ui/textarea';
 import { Button } from './components/ui/button';
+import { Trash2 } from 'lucide-react';
+import { motion } from 'framer-motion';
+
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from './components/ui/alert-dialog';
 
 type Note = {
   content: string;
@@ -25,13 +40,58 @@ const formatTime = (date: Date): string => {
   return `${hours}:${minutesString} ${ampm}`;
 };
 
-const Note = ({ note }: { note: Note }) => {
+type ModalProps = {
+  trigger: JSX.Element;
+  title: string;
+  content: string;
+  action: { handler: () => void; text: string };
+};
+
+const Modal = ({ trigger, title, content, action }: ModalProps) => {
+  return (
+    <AlertDialog>
+      <AlertDialogTrigger asChild>{trigger}</AlertDialogTrigger>
+      <AlertDialogContent>
+        <AlertDialogHeader>
+          <AlertDialogTitle>{title}</AlertDialogTitle>
+          <AlertDialogDescription>{content}</AlertDialogDescription>
+        </AlertDialogHeader>
+        <AlertDialogFooter>
+          <AlertDialogCancel>Cancel</AlertDialogCancel>
+          <AlertDialogAction onClick={action.handler}>
+            {action.text}
+          </AlertDialogAction>
+        </AlertDialogFooter>
+      </AlertDialogContent>
+    </AlertDialog>
+  );
+};
+
+const Note = ({ note, onDelete }: { note: Note; onDelete: () => void }) => {
   const { content, createdAt } = note;
 
   return (
-    <div className='flex items-start space-x-3 p-3 rounded-lg mb-3'>
+    <div className='relative flex items-start space-x-3 p-3 rounded-lg mb-3 group'>
       <div className='flex-shrink-0 text-gray-500 whitespace-nowrap'>{`[${formatTime(createdAt)}]`}</div>
-      <p className='break-words'>{content}</p>
+      <div className='flex-grow pr-10'>
+        <p className='text-justify break-words'>{content}</p>
+      </div>
+      <Modal
+        trigger={
+          <motion.button
+            className='absolute top-2 right-2 p-1 hidden group-hover:block'
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.5 }}
+            whileHover={{ opacity: 1 }}
+          >
+            <Trash2 />
+          </motion.button>
+        }
+        title='Are you sure?'
+        content='This action cannot be undone. This will permanently delete your note.'
+        action={{ handler: onDelete, text: 'Delete' }}
+      />
     </div>
   );
 };
@@ -39,6 +99,12 @@ const Note = ({ note }: { note: Note }) => {
 const App = () => {
   const [notes, setNotes] = useState<Note[]>([]);
   const [content, setContent] = useState<string>('');
+
+  const handleDelete = (index: number) => {
+    const newNotes = [...notes];
+    newNotes.splice(index, 1);
+    setNotes(newNotes);
+  };
 
   return (
     <div className='max-w-4xl mx-auto p-5'>
@@ -67,7 +133,13 @@ const App = () => {
       </div>
       <div>
         {notes.length > 0 ? (
-          notes.map((note, index) => <Note key={index} note={note} />)
+          notes.map((note, index) => (
+            <Note
+              key={index}
+              note={note}
+              onDelete={() => handleDelete(index)}
+            />
+          ))
         ) : (
           <p className='text-center text-gray-500'>No notes yet.</p>
         )}
