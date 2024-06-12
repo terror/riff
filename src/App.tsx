@@ -1,8 +1,6 @@
-import { useState } from 'react';
-import { Textarea } from './components/ui/textarea';
-import { Button } from './components/ui/button';
-import { Trash2 } from 'lucide-react';
 import { motion } from 'framer-motion';
+import { Trash2 } from 'lucide-react';
+import { useState } from 'react';
 
 import {
   AlertDialog,
@@ -15,6 +13,8 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from './components/ui/alert-dialog';
+import { Button } from './components/ui/button';
+import { Textarea } from './components/ui/textarea';
 import { formatDateToLongString, formatTimeTo12HourString } from './lib/utils';
 
 type Note = {
@@ -73,8 +73,8 @@ const Note = ({
   };
 
   return (
-    <div className='relative flex items-start space-x-3 p-3 rounded-lg mb-3 group'>
-      <div className='flex-shrink-0 text-gray-500 whitespace-nowrap'>{`[${formatTimeTo12HourString(createdAt)}]`}</div>
+    <div className='group relative mb-3 flex items-start space-x-3 rounded-lg p-3'>
+      <div className='flex-shrink-0 whitespace-nowrap text-gray-500'>{`[${formatTimeTo12HourString(createdAt)}]`}</div>
       <div className='flex-grow pr-10'>
         {isEditing ? (
           <Textarea
@@ -85,7 +85,7 @@ const Note = ({
             autoFocus
           />
         ) : (
-          <p className='text-justify break-words' onClick={startEditing}>
+          <p className='break-words text-justify' onClick={startEditing}>
             {content}
           </p>
         )}
@@ -93,7 +93,7 @@ const Note = ({
       <Alert
         trigger={
           <motion.button
-            className='absolute top-2 right-2 p-1 hidden group-hover:block'
+            className='absolute right-2 top-2 hidden p-1 group-hover:block'
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ duration: 0.5 }}
@@ -127,9 +127,9 @@ const App = () => {
   };
 
   return (
-    <div className='max-w-4xl mx-auto p-5'>
-      <div className='flex items-center mb-5'>
-        <h1 className='text-2xl font-bold mr-2'>
+    <div className='mx-auto max-w-4xl p-5'>
+      <div className='mb-5 flex items-center'>
+        <h1 className='mr-2 text-2xl font-bold'>
           {formatDateToLongString(new Date())}
         </h1>
         <p className='text-lg text-gray-600'>{`(${notes.length} ${notes.length === 1 ? 'note' : 'notes'})`}</p>
@@ -137,7 +137,7 @@ const App = () => {
       <div className='mb-5 flex flex-col'>
         <Textarea
           value={content}
-          className='w-full mb-3'
+          className='mb-3 w-full'
           onChange={(e) => setContent(e.target.value)}
           placeholder='Type your note here...'
         />
@@ -148,7 +148,7 @@ const App = () => {
               setContent('');
             }
           }}
-          className='py-2 rounded-lg shadow self-end'
+          className='self-end rounded-lg py-2 shadow'
         >
           Publish
         </Button>
