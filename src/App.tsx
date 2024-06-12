@@ -44,7 +44,7 @@ const App = () => {
     <div className='max-w-4xl mx-auto p-5'>
       <div className='flex items-center mb-5'>
         <h1 className='text-2xl font-bold mr-2'>{formatDate(new Date())}</h1>
-        <p className='text-lg text-gray-600'>{`(${notes.length} notes)`}</p>
+        <p className='text-lg text-gray-600'>{`(${notes.length} ${notes.length === 1 ? 'note' : 'notes'})`}</p>
       </div>
       <div className='mb-5 flex flex-col'>
         <Textarea
