@@ -60,7 +60,7 @@ const App = () => {
               setContent('');
             }
           }}
-          className='py-2 text-white rounded-lg shadow self-end'
+          className='py-2 rounded-lg shadow self-end'
         >
           Publish
         </Button>
