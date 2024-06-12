@@ -15,38 +15,21 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from './components/ui/alert-dialog';
+import { formatDateToLongString, formatTimeTo12HourString } from './lib/utils';
 
 type Note = {
   content: string;
   createdAt: Date;
 };
 
-const formatDate = (date: Date): string => {
-  const month = date.toLocaleString('en-US', { month: 'long' });
-  return `${month} ${date.getDate()}, ${date.getFullYear()}`;
-};
-
-const formatTime = (date: Date): string => {
-  let hours = date.getHours();
-  let minutes = date.getMinutes();
-  let minutesString = minutes.toString();
-  let ampm = hours >= 12 ? 'PM' : 'AM';
-
-  hours = hours % 12;
-  hours = hours ? hours : 12;
-  minutesString = minutes < 10 ? '0' + minutesString : minutesString;
-
-  return `${hours}:${minutesString} ${ampm}`;
-};
-
-type ModalProps = {
+type AlertProps = {
   trigger: JSX.Element;
   title: string;
   content: string;
   action: { handler: () => void; text: string };
 };
 
-const Modal = ({ trigger, title, content, action }: ModalProps) => {
+const Alert = ({ trigger, title, content, action }: AlertProps) => {
   return (
     <AlertDialog>
       <AlertDialogTrigger asChild>{trigger}</AlertDialogTrigger>
@@ -79,6 +62,11 @@ const Note = ({
   const [isEditing, setIsEditing] = useState(false);
   const [editContent, setEditContent] = useState(content);
 
+  const startEditing = () => {
+    setEditContent(content);
+    setIsEditing(true);
+  };
+
   const handleSave = () => {
     onUpdate(editContent);
     setIsEditing(false);
@@ -86,7 +74,7 @@ const Note = ({
 
   return (
     <div className='relative flex items-start space-x-3 p-3 rounded-lg mb-3 group'>
-      <div className='flex-shrink-0 text-gray-500 whitespace-nowrap'>{`[${formatTime(createdAt)}]`}</div>
+      <div className='flex-shrink-0 text-gray-500 whitespace-nowrap'>{`[${formatTimeTo12HourString(createdAt)}]`}</div>
       <div className='flex-grow pr-10'>
         {isEditing ? (
           <Textarea
@@ -97,15 +85,12 @@ const Note = ({
             autoFocus
           />
         ) : (
-          <p
-            className='text-justify break-words'
-            onClick={() => setIsEditing(true)}
-          >
+          <p className='text-justify break-words' onClick={startEditing}>
             {content}
           </p>
         )}
       </div>
-      <Modal
+      <Alert
         trigger={
           <motion.button
             className='absolute top-2 right-2 p-1 hidden group-hover:block'
@@ -144,7 +129,9 @@ const App = () => {
   return (
     <div className='max-w-4xl mx-auto p-5'>
       <div className='flex items-center mb-5'>
-        <h1 className='text-2xl font-bold mr-2'>{formatDate(new Date())}</h1>
+        <h1 className='text-2xl font-bold mr-2'>
+          {formatDateToLongString(new Date())}
+        </h1>
         <p className='text-lg text-gray-600'>{`(${notes.length} ${notes.length === 1 ? 'note' : 'notes'})`}</p>
       </div>
       <div className='mb-5 flex flex-col'>
