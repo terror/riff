@@ -1,5 +1,4 @@
 import { useState } from 'react';
-
 import { Textarea } from './components/ui/textarea';
 import { Button } from './components/ui/button';
 import { Trash2 } from 'lucide-react';
@@ -67,14 +66,44 @@ const Modal = ({ trigger, title, content, action }: ModalProps) => {
   );
 };
 
-const Note = ({ note, onDelete }: { note: Note; onDelete: () => void }) => {
+const Note = ({
+  note,
+  onDelete,
+  onUpdate,
+}: {
+  note: Note;
+  onDelete: () => void;
+  onUpdate: (content: string) => void;
+}) => {
   const { content, createdAt } = note;
+  const [isEditing, setIsEditing] = useState(false);
+  const [editContent, setEditContent] = useState(content);
+
+  const handleSave = () => {
+    onUpdate(editContent);
+    setIsEditing(false);
+  };
 
   return (
     <div className='relative flex items-start space-x-3 p-3 rounded-lg mb-3 group'>
       <div className='flex-shrink-0 text-gray-500 whitespace-nowrap'>{`[${formatTime(createdAt)}]`}</div>
       <div className='flex-grow pr-10'>
-        <p className='text-justify break-words'>{content}</p>
+        {isEditing ? (
+          <Textarea
+            value={editContent}
+            className='w-full'
+            onChange={(e) => setEditContent(e.target.value)}
+            onBlur={handleSave}
+            autoFocus
+          />
+        ) : (
+          <p
+            className='text-justify break-words'
+            onClick={() => setIsEditing(true)}
+          >
+            {content}
+          </p>
+        )}
       </div>
       <Modal
         trigger={
@@ -103,6 +132,12 @@ const App = () => {
   const handleDelete = (index: number) => {
     const newNotes = [...notes];
     newNotes.splice(index, 1);
+    setNotes(newNotes);
+  };
+
+  const handleUpdate = (index: number, newContent: string) => {
+    const newNotes = [...notes];
+    newNotes[index].content = newContent;
     setNotes(newNotes);
   };
 
@@ -138,6 +173,7 @@ const App = () => {
               key={index}
               note={note}
               onDelete={() => handleDelete(index)}
+              onUpdate={(newContent: string) => handleUpdate(index, newContent)}
             />
           ))
         ) : (
