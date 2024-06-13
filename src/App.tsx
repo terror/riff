@@ -96,8 +96,8 @@ const NoteComponent = ({
 
   return (
     <div className='group relative mb-3 flex items-start space-x-3 rounded-lg p-3'>
-      <div className='flex-shrink-0 whitespace-nowrap text-gray-500'>{`[${formatTimeTo12HourString(createdAt)}]`}</div>
-      <div className='flex-grow pr-10'>
+      <div className='shrink-0 whitespace-nowrap text-gray-500'>{`[${formatTimeTo12HourString(createdAt)}]`}</div>
+      <div className='grow pr-10'>
         {isEditing ? (
           <Textarea
             autoComplete='off'
