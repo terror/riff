@@ -100,14 +100,14 @@ const NoteComponent = ({
       <div className='flex-grow pr-10'>
         {isEditing ? (
           <Textarea
-            ref={textareaRef}
             autoComplete='off'
             autoCorrect='off'
-            value={editContent}
-            className='w-full resize-none overflow-hidden'
-            onChange={(e) => setEditContent(e.target.value)}
-            onBlur={handleSave}
             autoFocus
+            className='w-full resize-none overflow-hidden'
+            onBlur={handleSave}
+            onChange={(e) => setEditContent(e.target.value)}
+            ref={textareaRef}
+            value={editContent}
           />
         ) : (
           <div className='prose' onClick={startEditing}>
@@ -170,10 +170,12 @@ const App = () => {
       </div>
       <div className='mb-5 flex flex-col'>
         <Textarea
-          value={content}
+          autoComplete='off'
+          autoCorrect='off'
           className='mb-3 w-full'
           onChange={(e) => setContent(e.target.value)}
           placeholder='Type your note here...'
+          value={content}
         />
         <Button
           onClick={() => {
