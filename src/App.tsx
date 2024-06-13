@@ -8,6 +8,7 @@ import rehypeHighlight from 'rehype-highlight';
 import rehypeKatex from 'rehype-katex';
 import remarkMath from 'remark-math';
 
+import { ModeToggle } from './components/mode-toggle';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -161,7 +162,11 @@ const App = () => {
         <h1 className='mr-2 text-2xl font-bold'>
           {formatDateToLongString(new Date())}
         </h1>
+
         <p className='text-lg text-gray-600'>{`(${notes.length} ${notes.length === 1 ? 'note' : 'notes'})`}</p>
+        <div className='ml-auto'>
+          <ModeToggle />
+        </div>
       </div>
       <div className='mb-5 flex flex-col'>
         <Textarea
