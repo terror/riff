@@ -2,7 +2,10 @@
 
 **riff** is a place to expand on ideas.
 
-<img align="right" width="500" alt="Screenshot 2024-06-12 at 1 53 54 PM" src="https://github.com/terror/riff/assets/31192478/a57be110-443a-44bf-8831-277bbc8cc91c">
+> [!WARNING]
+> This project is in very early stages.
+
+<img align="right" width="500" alt="Screenshot 2024-06-12 at 1 53 54 PM" src="https://github.com/terror/riff/assets/31192478/7c38c9e2-aae2-4d34-84a5-8d65b8ded177">
 
 I'm writing this to encourage myself to do more daily note-taking, while also
 having a custom app I can easily extend and integrate with whatever services I
