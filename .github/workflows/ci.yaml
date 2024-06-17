@@ -24,7 +24,7 @@ jobs:
       - name: Download actionlint
         id: actionlint
         run:
-          bash <(curl
+          bash <(curl -s
           https://raw.githubusercontent.com/rhysd/actionlint/main/scripts/download-actionlint.bash)
 
       - name: Check workflow
@@ -58,3 +58,6 @@ jobs:
 
       - name: Lint
         run: bun run lint
+
+      - name: Test
+        run: bun test

@@ -30,7 +30,7 @@ bun install
 bun run tauri dev
 ```
 
-Expect `http://localhost:1420/` to be in use and the desktop ready to view.
+Expect `http://localhost:1420/` to be in use and the desktop app ready to view.
 
 ### Prior Art
 
