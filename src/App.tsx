@@ -1,10 +1,8 @@
-import { open } from '@tauri-apps/api/dialog';
 import { invoke } from '@tauri-apps/api/tauri';
 import { motion } from 'framer-motion';
 import 'highlight.js/styles/base16/seti-ui.css';
 import 'katex/dist/katex.min.css';
 import { Trash2 } from 'lucide-react';
-import { Settings as SettingsIcon } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
 import ReactMarkdown from 'react-markdown';
 import rehypeHighlight from 'rehype-highlight';
@@ -12,123 +10,18 @@ import rehypeKatex from 'rehype-katex';
 import remarkMath from 'remark-math';
 import { toast } from 'sonner';
 
+import { Alert } from './components/alert';
 import { ModeToggle } from './components/mode-toggle';
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-  AlertDialogTrigger,
-} from './components/ui/alert-dialog';
+import { Settings } from './components/settings';
 import { Button } from './components/ui/button';
-import {
-  Dialog,
-  DialogClose,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from './components/ui/dialog';
-import { Input } from './components/ui/input';
-import { Label } from './components/ui/label';
 import { Textarea } from './components/ui/textarea';
 import type { Config } from './lib/types';
 import { formatDateToLongString, formatTimeTo12HourString } from './lib/utils';
 import './styles/syntax.css';
 
-type SettingsProps = {
-  config: Config;
-};
-
-const Settings = ({ config }: SettingsProps) => {
-  const [store, setStore] = useState<string>(config.store);
-
-  const chooseFolder = async () => {
-    const selected = await open({ multiple: false, directory: true });
-    if (typeof selected === 'string') setStore(selected);
-  };
-
-  const handleSave = () => {
-    invoke('save_config', { config: { store } })
-      .then(() => toast.success('Successfully saved configuration.'))
-      .catch((error) => toast.error(`Failed to save configuration: ${error}`));
-  };
-
-  return (
-    <Dialog>
-      <DialogTrigger asChild>
-        <Button variant='ghost' size='icon'>
-          <SettingsIcon />
-        </Button>
-      </DialogTrigger>
-      <DialogContent>
-        <DialogHeader>
-          <DialogTitle>Settings</DialogTitle>
-          <DialogDescription>
-            Update your preferences here. Click save when you're finished.
-          </DialogDescription>
-        </DialogHeader>
-        <div className='flex items-center space-x-2'>
-          <div>
-            <Label htmlFor='path' className='text-right'>
-              Store
-            </Label>
-            <p className='text-sm text-muted-foreground'>
-              Choose the folder where your notes will be stored.
-            </p>
-          </div>
-          <Input
-            onClick={chooseFolder}
-            placeholder={store || 'Choose folder...'}
-            readOnly
-          />
-        </div>
-        <DialogFooter>
-          <DialogClose asChild>
-            <Button onClick={handleSave}>Save</Button>
-          </DialogClose>
-        </DialogFooter>
-      </DialogContent>
-    </Dialog>
-  );
-};
-
 type Note = {
   content: string;
   createdAt: Date;
-};
-
-type AlertProps = {
-  trigger: JSX.Element;
-  title: string;
-  content: string;
-  action: { handler: () => void; text: string };
-};
-
-const Alert = ({ trigger, title, content, action }: AlertProps) => {
-  return (
-    <AlertDialog>
-      <AlertDialogTrigger asChild>{trigger}</AlertDialogTrigger>
-      <AlertDialogContent>
-        <AlertDialogHeader>
-          <AlertDialogTitle>{title}</AlertDialogTitle>
-          <AlertDialogDescription>{content}</AlertDialogDescription>
-        </AlertDialogHeader>
-        <AlertDialogFooter>
-          <AlertDialogCancel>Cancel</AlertDialogCancel>
-          <AlertDialogAction onClick={action.handler}>
-            {action.text}
-          </AlertDialogAction>
-        </AlertDialogFooter>
-      </AlertDialogContent>
-    </AlertDialog>
-  );
 };
 
 const NoteComponent = ({
