@@ -17,3 +17,6 @@ fmt:
 
 test:
   bun test
+
+typeshare:
+  typeshare -l typescript -o src/lib/types.ts src-tauri

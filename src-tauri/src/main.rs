@@ -1,15 +1,34 @@
-// Prevents additional console window on Windows in release, DO NOT REMOVE!!
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
-// Learn more about Tauri commands at https://tauri.app/v1/guides/features/command
-#[tauri::command]
-fn greet(name: &str) -> String {
-  format!("Hello, {}! You've been greeted from Rust!", name)
+use {
+  config::Config,
+  error::{Error, Result},
+  serde::{ser::Serializer, Deserialize, Serialize},
+  std::{
+    fs,
+    io::{self, ErrorKind::NotFound},
+    path::PathBuf,
+  },
+  tauri::command,
+  typeshare::typeshare,
+};
+
+mod config;
+mod error;
+
+#[command]
+fn load_config() -> Result<Config> {
+  Config::load()
+}
+
+#[command]
+fn save_config(config: Config) -> Result {
+  config.save()
 }
 
 fn main() {
   tauri::Builder::default()
-    .invoke_handler(tauri::generate_handler![greet])
+    .invoke_handler(tauri::generate_handler![load_config, save_config])
     .run(tauri::generate_context!())
     .expect("error while running tauri application");
 }

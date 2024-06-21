@@ -1,12 +1,16 @@
+import { open } from '@tauri-apps/api/dialog';
+import { invoke } from '@tauri-apps/api/tauri';
 import { motion } from 'framer-motion';
 import 'highlight.js/styles/base16/seti-ui.css';
 import 'katex/dist/katex.min.css';
 import { Trash2 } from 'lucide-react';
+import { Settings as SettingsIcon } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
 import ReactMarkdown from 'react-markdown';
 import rehypeHighlight from 'rehype-highlight';
 import rehypeKatex from 'rehype-katex';
 import remarkMath from 'remark-math';
+import { toast } from 'sonner';
 
 import { ModeToggle } from './components/mode-toggle';
 import {
@@ -21,9 +25,79 @@ import {
   AlertDialogTrigger,
 } from './components/ui/alert-dialog';
 import { Button } from './components/ui/button';
+import {
+  Dialog,
+  DialogClose,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from './components/ui/dialog';
+import { Input } from './components/ui/input';
+import { Label } from './components/ui/label';
 import { Textarea } from './components/ui/textarea';
+import type { Config } from './lib/types';
 import { formatDateToLongString, formatTimeTo12HourString } from './lib/utils';
 import './styles/syntax.css';
+
+type SettingsProps = {
+  config: Config;
+};
+
+const Settings = ({ config }: SettingsProps) => {
+  const [store, setStore] = useState<string>(config.store);
+
+  const chooseFolder = async () => {
+    const selected = await open({ multiple: false, directory: true });
+    if (typeof selected === 'string') setStore(selected);
+  };
+
+  const handleSave = () => {
+    invoke('save_config', { config: { store } })
+      .then(() => toast.success('Successfully saved configuration.'))
+      .catch((error) => toast.error(`Failed to save configuration: ${error}`));
+  };
+
+  return (
+    <Dialog>
+      <DialogTrigger asChild>
+        <Button variant='ghost' size='icon'>
+          <SettingsIcon />
+        </Button>
+      </DialogTrigger>
+      <DialogContent>
+        <DialogHeader>
+          <DialogTitle>Settings</DialogTitle>
+          <DialogDescription>
+            Update your preferences here. Click save when you're finished.
+          </DialogDescription>
+        </DialogHeader>
+        <div className='flex items-center space-x-2'>
+          <div>
+            <Label htmlFor='path' className='text-right'>
+              Store
+            </Label>
+            <p className='text-sm text-muted-foreground'>
+              Choose the folder where your notes will be stored.
+            </p>
+          </div>
+          <Input
+            onClick={chooseFolder}
+            placeholder={store || 'Choose folder...'}
+            readOnly
+          />
+        </div>
+        <DialogFooter>
+          <DialogClose asChild>
+            <Button onClick={handleSave}>Save</Button>
+          </DialogClose>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
+  );
+};
 
 type Note = {
   content: string;
@@ -73,7 +147,7 @@ const NoteComponent = ({
 
   const textareaRef = useRef<HTMLTextAreaElement | null>(null);
 
-  const startEditing = () => {
+  const edit = () => {
     setEditContent(content);
     setIsEditing(true);
   };
@@ -83,7 +157,7 @@ const NoteComponent = ({
     setIsEditing(false);
   };
 
-  const handleTextareaResize = () => {
+  const resize = () => {
     if (textareaRef.current) {
       textareaRef.current.style.height = 'auto';
       textareaRef.current.style.height = `${textareaRef.current.scrollHeight}px`;
@@ -91,7 +165,7 @@ const NoteComponent = ({
   };
 
   useEffect(() => {
-    if (isEditing && textareaRef.current) handleTextareaResize();
+    if (isEditing && textareaRef.current) resize();
   }, [isEditing, editContent]);
 
   return (
@@ -110,7 +184,7 @@ const NoteComponent = ({
             value={editContent}
           />
         ) : (
-          <div className='prose' onClick={startEditing}>
+          <div className='prose' onClick={edit}>
             <ReactMarkdown
               remarkPlugins={[remarkMath]}
               rehypePlugins={[rehypeHighlight, rehypeKatex]}
@@ -143,6 +217,15 @@ const NoteComponent = ({
 const App = () => {
   const [notes, setNotes] = useState<Note[]>([]);
   const [content, setContent] = useState<string>('');
+  const [config, setConfig] = useState<Config | undefined>(undefined);
+
+  useEffect(() => {
+    invoke<Config>('load_config')
+      .then((config: Config) => setConfig(config))
+      .catch((error) => toast.error(`Failed to load configuration: ${error}`));
+  }, []);
+
+  if (!config) return null;
 
   const handleDelete = (index: number) => {
     const newNotes = [...notes];
@@ -156,16 +239,23 @@ const App = () => {
     setNotes(newNotes);
   };
 
+  const handlePublish = () => {
+    if (content.trim()) {
+      setNotes([{ content, createdAt: new Date() }, ...notes]);
+      setContent('');
+    }
+  };
+
   return (
     <div className='mx-auto max-w-4xl p-5'>
       <div className='mb-5 flex items-center'>
         <h1 className='mr-2 text-2xl font-bold'>
           {formatDateToLongString(new Date())}
         </h1>
-
         <p className='text-lg text-gray-600'>{`(${notes.length} ${notes.length === 1 ? 'note' : 'notes'})`}</p>
-        <div className='ml-auto'>
+        <div className='ml-auto flex items-center space-x-2'>
           <ModeToggle />
+          <Settings config={config} />
         </div>
       </div>
       <div className='mb-5 flex flex-col'>
@@ -174,17 +264,12 @@ const App = () => {
           autoCorrect='off'
           className='mb-3 w-full'
           onChange={(e) => setContent(e.target.value)}
-          placeholder='Type your note here...'
+          placeholder="What's on your mind?"
           value={content}
         />
         <Button
-          onClick={() => {
-            if (content.trim()) {
-              setNotes([{ content, createdAt: new Date() }, ...notes]);
-              setContent('');
-            }
-          }}
           className='self-end rounded-lg py-2 shadow'
+          onClick={handlePublish}
         >
           Publish
         </Button>

@@ -1,20 +1,19 @@
 [package]
-name = "tauri-app"
+name = "riff"
 version = "0.0.0"
-description = "A Tauri App"
-authors = ["you"]
+authors = ["Liam <liam@scalzulli.com>"]
+description = "A place to expand ideas"
 edition = "2021"
-
-# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [build-dependencies]
 tauri-build = { version = "1", features = [] }
 
 [dependencies]
-tauri = { version = "1", features = ["shell-open"] }
 serde = { version = "1", features = ["derive"] }
 serde_json = "1"
+tauri = { version = "1", features = [ "dialog-all", "shell-open"] }
+thiserror = "1.0.61"
+typeshare = "1.0.3"
 
 [features]
-# This feature is used for production builds or when a dev server is not specified, DO NOT REMOVE!!
 custom-protocol = ["tauri/custom-protocol"]
