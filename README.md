@@ -3,7 +3,7 @@
 **riff** is a place to expand on ideas.
 
 > [!WARNING]
-> This project is in very early stages.
+> This project is in very early stages. Breaking changes guaranteed.
 
 <img align="right" width="500" alt="Screenshot 2024-06-12 at 1 53 54 PM" src="https://github.com/terror/riff/assets/31192478/7c38c9e2-aae2-4d34-84a5-8d65b8ded177">
 
