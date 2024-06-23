@@ -70,14 +70,14 @@ const NoteComponent = ({
             autoComplete='off'
             autoCorrect='off'
             autoFocus
-            className='w-full resize-none overflow-hidden'
+            className='w-full resize-none border-none p-0 text-lg focus-visible:ring-0 focus-visible:ring-offset-0'
             onBlur={handleSave}
             onChange={(e) => setEditContent(e.target.value)}
             ref={textareaRef}
             value={editContent}
           />
         ) : (
-          <div className='prose' onClick={edit}>
+          <div className='prose text-lg' onClick={edit}>
             <ReactMarkdown
               remarkPlugins={[remarkMath]}
               rehypePlugins={[rehypeHighlight, rehypeKatex]}
@@ -155,7 +155,7 @@ const App = () => {
         <Textarea
           autoComplete='off'
           autoCorrect='off'
-          className='mb-3 w-full'
+          className='w-full resize-none border-none p-0 text-lg focus-visible:ring-0 focus-visible:ring-offset-0'
           onChange={(e) => setContent(e.target.value)}
           placeholder="What's on your mind?"
           value={content}
