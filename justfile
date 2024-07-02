@@ -13,6 +13,7 @@ dev:
   bun run tauri dev
 
 fmt:
+  cd src-tauri && cargo fmt
   prettier --write .
 
 test:
