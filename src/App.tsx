@@ -3,7 +3,7 @@ import { motion } from 'framer-motion';
 import 'highlight.js/styles/base16/seti-ui.css';
 import 'katex/dist/katex.min.css';
 import { Trash2 } from 'lucide-react';
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useState } from 'react';
 import ReactMarkdown from 'react-markdown';
 import rehypeHighlight from 'rehype-highlight';
 import rehypeKatex from 'rehype-katex';
@@ -11,10 +11,10 @@ import remarkMath from 'remark-math';
 import { toast } from 'sonner';
 
 import { Alert } from './components/alert';
+import { Editor } from './components/editor';
 import { ModeToggle } from './components/mode-toggle';
 import { Settings } from './components/settings';
 import { Button } from './components/ui/button';
-import { Textarea } from './components/ui/textarea';
 import type { Config } from './lib/types';
 import { formatDateToLongString, formatTimeTo12HourString } from './lib/utils';
 import './styles/syntax.css';
@@ -38,8 +38,6 @@ const NoteComponent = ({
   const [isEditing, setIsEditing] = useState(false);
   const [editContent, setEditContent] = useState(content);
 
-  const textareaRef = useRef<HTMLTextAreaElement | null>(null);
-
   const edit = () => {
     setEditContent(content);
     setIsEditing(true);
@@ -50,31 +48,16 @@ const NoteComponent = ({
     setIsEditing(false);
   };
 
-  const resize = () => {
-    if (textareaRef.current) {
-      textareaRef.current.style.height = 'auto';
-      textareaRef.current.style.height = `${textareaRef.current.scrollHeight}px`;
-    }
-  };
-
-  useEffect(() => {
-    if (isEditing && textareaRef.current) resize();
-  }, [isEditing, editContent]);
-
   return (
     <div className='group relative mb-3 flex items-start space-x-3 rounded-lg p-3'>
       <div className='shrink-0 whitespace-nowrap text-gray-500'>{`[${formatTimeTo12HourString(createdAt)}]`}</div>
       <div className='grow pr-10'>
         {isEditing ? (
-          <Textarea
-            autoComplete='off'
-            autoCorrect='off'
-            autoFocus
-            className='w-full resize-none border-none p-0 text-lg focus-visible:ring-0 focus-visible:ring-offset-0'
+          <Editor
+            content={editContent}
+            onChange={setEditContent}
             onBlur={handleSave}
-            onChange={(e) => setEditContent(e.target.value)}
-            ref={textareaRef}
-            value={editContent}
+            autoFocus
           />
         ) : (
           <div className='prose text-lg' onClick={edit}>
@@ -152,13 +135,10 @@ const App = () => {
         </div>
       </div>
       <div className='mb-5 flex flex-col'>
-        <Textarea
-          autoComplete='off'
-          autoCorrect='off'
-          className='w-full resize-none border-none p-0 text-lg focus-visible:ring-0 focus-visible:ring-offset-0'
-          onChange={(e) => setContent(e.target.value)}
+        <Editor
+          content={content}
+          onChange={setContent}
           placeholder="What's on your mind?"
-          value={content}
         />
         <Button
           className='self-end rounded-lg py-2 shadow'
