@@ -5,7 +5,7 @@
 > [!WARNING]
 > This project is in very early stages. Breaking changes guaranteed.
 
-<img align="right" width="500" alt="Screenshot 2024-06-12 at 1 53 54 PM" src="https://github.com/terror/riff/assets/31192478/7c38c9e2-aae2-4d34-84a5-8d65b8ded177">
+<img align="right" width="500" alt="demo" src="https://github.com/terror/riff/assets/31192478/05dc8534-c655-4146-9ba0-5c3ddbf8da5b">
 
 I'm writing this to encourage myself to do more daily note-taking, while also
 having a custom app I can easily extend and integrate with whatever services I
