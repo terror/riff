@@ -30,13 +30,15 @@ type SettingsProps = {
 };
 
 export const Settings = ({ config }: SettingsProps) => {
+  const [store, setStore] = useState<string>(config.store);
+
   const [openAiApiKey, setOpenAiApiKey] = useState<string | undefined>(
     config.openAiApiKey
   );
+
   const [openAiModel, setOpenAiModel] = useState<Model>(
     config.model || Model.Gpt35Turbo
   );
-  const [store, setStore] = useState<string>(config.store);
 
   const chooseFolder = async () => {
     const selected = await open({ multiple: false, directory: true });

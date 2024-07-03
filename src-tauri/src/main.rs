@@ -2,6 +2,7 @@
 
 use {
   config::Config,
+  model::Model,
   error::{Error, Result},
   serde::{ser::Serializer, Deserialize, Serialize},
   std::{
@@ -14,6 +15,7 @@ use {
 };
 
 mod config;
+mod model;
 mod error;
 
 #[command]

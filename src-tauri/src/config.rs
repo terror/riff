@@ -1,22 +1,4 @@
 use super::*;
-use serde::{Deserialize, Serialize};
-
-#[derive(Debug, Deserialize, Serialize, Clone, Copy)]
-#[serde(rename_all = "kebab-case")]
-#[typeshare]
-pub enum Model {
-  Gpt35Turbo,
-  Gpt35Turbo16k,
-  Gpt4,
-  Gpt432k,
-  Gpt41106Preview,
-}
-
-impl Default for Model {
-  fn default() -> Self {
-    Model::Gpt35Turbo
-  }
-}
 
 #[derive(Debug, Deserialize, Serialize)]
 #[serde(rename_all = "camelCase")]
